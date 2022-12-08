@@ -1,2 +1,4 @@
 -e support
 pytest
+networkx
+matplotlib
