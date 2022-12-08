@@ -1,5 +1,6 @@
 import argparse
 import os.path
+from collections import defaultdict
 
 import pytest
 
@@ -9,32 +10,29 @@ INPUT_TXT = os.path.join(os.path.dirname(__file__), 'input.txt')
 
 # NOTE: paste test text here
 INPUT_S = '''\
-0
-3
-0
-1
--3
+b inc 5 if a > 1
+a inc 1 if b < 5
+c dec -10 if a >= 1
+c inc -20 if c == 10
 '''
-EXPECTED = 10
+EXPECTED = 1
 
 
 def compute(s: str) -> int:
+    registers = defaultdict(int)
+    lines = s.splitlines()
+    for line in lines:
+        match line.split():
+            case reg1, 'inc', val1, 'if', reg2, op, val2:
+                if eval(f'registers["{reg2}"]{op}{val2}'):
+                    registers[reg1] += int(val1)
+            case reg1, 'dec', val1, 'if', reg2, op, val2:
+                if eval(f'registers["{reg2}"]{op}{val2}'):
+                    registers[reg1] -= int(val1)
+            case _:
+                raise AssertionError('uncaught')
+    return max(registers.values())
 
-    nums = [int(n) for n in s.splitlines()]
-    current_index = 0
-    step = 0
-    while True:
-        try:
-            jump_len = nums[current_index]
-            next_index = current_index + jump_len
-            if jump_len >= 3:
-                nums[current_index] -= 1
-            else:
-                nums[current_index] += 1
-            current_index = next_index
-            step += 1
-        except IndexError:
-            return step
 
 @pytest.mark.solved
 @pytest.mark.parametrize(
