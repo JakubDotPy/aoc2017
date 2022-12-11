@@ -16,7 +16,7 @@ EXPECTED = 1
 
 def compute(input_s: str) -> int:
     q = r = s = 0
-    dists = []
+    max_dist = 0
     for dir in input_s.strip().split(','):
         match dir:
             # @formatter:off
@@ -27,8 +27,8 @@ def compute(input_s: str) -> int:
             case 'sw': r += 1; q -= 1
             case 'nw': s += 1; q -= 1
             # @formatter:on
-        dists.append((abs(q) + abs(r) + abs(s)) // 2)
-    return max(dists)
+        max_dist = max(max_dist, ((abs(q) + abs(r) + abs(s)) // 2))
+    return max_dist
 
 
 @pytest.mark.solved
